@@ -24,13 +24,13 @@ Server will be active at `http://127.0.0.1:8000`.
 
 ```mermaid
 flowchart TD
-  Client[HTTP Clients] --> API[FastAPI Entry Point /infer]
-  API --> Canary[CanaryRouter & ModelRegistry]
-  API --> BatchQueue[Dynamic BatchingQueue max_batch=8 wait=50ms]
-  BatchQueue --> Worker[Worker Loop + Thread Pool]
-  Worker --> Model[CpuEmbeddingModel 16-d Normalized]
-  API --> Metrics[Prometheus /metrics]
-  API --> Admin[Canary & Model Management /models/*]
+  Client["HTTP Clients"] --> API["FastAPI /infer"]
+  API --> Canary["CanaryRouter + ModelRegistry"]
+  API --> BatchQueue["Dynamic BatchingQueue<br/>max_batch=8, wait=50ms"]
+  BatchQueue --> Worker["Worker Loop + Thread Pool"]
+  Worker --> Model["CpuEmbeddingModel 16-d Normalized"]
+  API --> Metrics["/metrics Prometheus"]
+  API --> Admin["Canary + Model Management<br/>/models/*"]
 ```
 
 ## Features & Milestones
