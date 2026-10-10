@@ -111,8 +111,33 @@ passed. `ruff check src tests`: passed. `mypy src`: passed.
 **Known risks:** registry is not yet connected to `/infer`; I2-I5 runtime
 verification remains blocked by sandbox-wide asyncio failure.
 
-**Git:** branch `feat/i2-queue`; new work is uncommitted pending grouping of
-verified changes.
+**Git:** branch `feat/i2-queue`; verified registry/benchmark/documentation work
+committed as `c976924` (`feat: add model registry groundwork`). Unverified I2
+files remain uncommitted.
 
 **Exact next action:** add a synchronous quantization-evaluation interface and
 tests, then update the integration/release contract documentation.
+
+## 2026-10-10 IST — I8 evaluation preparation
+
+**Overall status:** I0/I1 complete; I2 runtime verification blocked; I6/I8 have
+tested standalone preparation components only.
+
+**Implemented:** `evaluate_variant` measures local candidate latency and cosine
+agreement against a reference-model protocol. No quantized model is claimed or
+measured because no suitable local runtime/model variant is available.
+
+**Files changed:** `src/inference_server/evaluation.py`,
+`tests/test_evaluation.py`, `docs/DECISIONS.md`, `docs/LEARN.md`.
+
+**Commands/results:** targeted evaluation tests: 2 passed; initial Ruff pass
+reported one line-length issue, corrected before the next full static check;
+mypy passed.
+
+**Known risks:** no model variant/quantization result exists; async I2 runtime
+verification remains blocked.
+
+**Git:** branch `feat/i2-queue`; uncommitted evaluation preparation and I2 work.
+
+**Exact next action:** run static checks after the formatting correction, then
+commit the verified I8 preparation separately from unverified I2 code.

@@ -13,3 +13,7 @@
 ## I6 preparation
 - A model handle combines the model object with the version returned to callers.
 - An atomic replacement prevents readers from seeing a half-updated handle.
+
+## I8 preparation
+- Variant evaluation compares a candidate embedding with a reference embedding.
+- Cosine similarity is a simple agreement measure for equal-sized vectors.
