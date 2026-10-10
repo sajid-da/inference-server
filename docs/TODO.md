@@ -1,7 +1,8 @@
 # TODO
 ## Done
 - [x] I0: scaffold, health endpoint, tests, and CI.
+- [x] I1: naive synchronous CPU inference baseline and measurement.
 ## In progress
 - [ ] None.
 ## Not started
-- [ ] I1-I10: serving, batching, rollout, monitoring, integration, polish.
+- [ ] I2-I10: batching, rollout, monitoring, integration, polish.
