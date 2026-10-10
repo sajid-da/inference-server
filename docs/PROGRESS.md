@@ -137,7 +137,9 @@ mypy passed.
 **Known risks:** no model variant/quantization result exists; async I2 runtime
 verification remains blocked.
 
-**Git:** branch `feat/i2-queue`; uncommitted evaluation preparation and I2 work.
+**Git:** branch `feat/i2-queue`; verified evaluation preparation committed as
+`83c453d` (`feat: add variant evaluation groundwork`). Only unverified I2 work
+remains uncommitted.
 
 **Exact next action:** run static checks after the formatting correction, then
 commit the verified I8 preparation separately from unverified I2 code.

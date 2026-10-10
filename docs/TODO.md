@@ -6,3 +6,4 @@
 - [ ] I2: bounded queue, timeout semantics, overload rejection, and HTTP endpoint.
 ## Not started
 - [ ] I3-I10: batching, rollout, monitoring, integration, polish.
+- [ ] I6/I8 standalone groundwork exists but serving integration remains pending.

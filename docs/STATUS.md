@@ -9,6 +9,10 @@ I2 is in progress: a bounded worker queue and validated `POST /infer` endpoint
 have been implemented, but async tests cannot complete because independent
 `asyncio.run()` commands hang in the current execution sandbox. I2 is not done.
 
+I6/I8 preparation is available as verified standalone code: a thread-safe
+versioned model registry and a local candidate-versus-reference evaluation
+interface. Neither is yet integrated into the serving path.
+
 Exact next step: run the queue/API tests in a working asyncio runtime, repair
 any runtime defect, then complete the milestone with overload, timeout, and
 shutdown evidence.
