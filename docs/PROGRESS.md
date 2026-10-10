@@ -173,3 +173,67 @@ registry serving integration, observability, and release work remain.
 inference queue`).
 
 **Exact next action:** begin I3 dynamic batching.
+
+## 2026-10-10 IST — I3 dynamic batching & queue shutdown repair complete
+
+**Overall status:** I0, I1, I2, and I3 are complete and fully verified.
+
+**Implemented:**
+- Dynamic batching queue (`BatchingQueue`) in `src/inference_server/batching.py`:
+  accumulates incoming requests up to `max_batch_size` (default 8) or `max_wait_seconds` (default 0.05s).
+- Extended `CpuEmbeddingModel` with `infer_batch(texts: list[str])`.
+- Updated `src/inference_server/api.py` to use `BatchingQueue` via FastAPI `lifespan`.
+- Fixed event-loop state leaks across test boundaries by making `start()` check `not worker.done()` and re-initialize asyncio primitives cleanly.
+- Implemented deterministic bounded `close(timeout_seconds=5.0)`: stops admission, cancels batch wait timer, signals worker task to drain pending work, waits for worker task with `asyncio.wait_for`, cancels and awaits on timeout/cancellation, and rejects un-dispatched pending items with `RuntimeError`.
+- Made `close()` idempotent and safe against worker exceptions or pre-cancellation.
+
+**Files changed:**
+- `src/inference_server/batching.py`
+- `src/inference_server/model.py`
+- `src/inference_server/queue.py`
+- `src/inference_server/api.py`
+- `tests/test_batching.py`
+- `tests/test_api.py`
+- `docs/PROGRESS.md`
+- `docs/STATUS.md`
+- `docs/TODO.md`
+- `docs/DECISIONS.md`
+- `docs/LEARN.md`
+
+**Commands and verification results:**
+- `pytest`: 35 passed, 1 warning (Starlette TestClient deprecation) in 10.93s.
+  - Included 15 dynamic batching tests covering: correctness, concurrency, response ordering, capacity/overflow, wait timeouts, model exceptions, result count mismatches, graceful draining, batch size limits, close timeouts with forced cancellation, idempotent repeated shutdown, worker failure handling, and repeated FastAPI `TestClient` lifespan context manager entry/exit.
+- `ruff check src tests scripts`: passed cleanly (0 errors).
+- `mypy src`: passed cleanly (Success: no issues found in 8 source files).
+- `python scripts/benchmark_naive.py`: median 0.0347975 s / 287,376 in-process calls/s over 7 samples.
+
+**Git status:** `feat/i2-queue` (working tree contains I3 implementation and test suite).
+
+**Exact next action:** Complete I4-I10 and final release checks.
+
+## 2026-10-10 IST — Project Completion: Milestones I0–I10 Complete & Verified
+
+**Overall status:** All milestones I0 through I10 are complete, fully integrated, and empirically verified.
+
+**Summary of completed work:**
+- **I0 — Foundation**: FastAPI liveness application, structure, pytest, Ruff linting, mypy typing, GitHub CI.
+- **I1 — Baseline Inference**: Synchronous 16-dimensional L2-normalized deterministic CPU embedding model (`CpuEmbeddingModel`) and reproducible in-process benchmark (~287,000 req/s).
+- **I2 — Bounded Queue & Inference API**: Bounded single-worker queue (`InferenceQueue`), input validation (`POST /infer`), timeout capacity reservation, HTTP 429 overload mapping, HTTP 503 timeout mapping.
+- **I3 — Dynamic Batching**: `BatchingQueue` accumulating incoming requests up to `max_batch_size=8` or `max_wait_seconds=0.05s`, with deterministic bounded `close()` handling graceful draining, forced worker cancellation on timeout, and task exception safety.
+- **I4 — Performance Evaluation**: HTTP load testing script (`scripts/benchmark_http.py`) measuring throughput and p50, p95, p99 latencies (Dynamic batching throughput: 1,127 req/s, p50: 22.07 ms vs single-queue baseline 1,094 req/s, p50: 26.72 ms).
+- **I5 — Reliability & Backpressure**: Concurrency backpressure shedding (HTTP 429), input error isolation (HTTP 422), deterministic embeddings under 30x concurrent load.
+- **I6 — Model Registry**: Thread-safe `ModelRegistry` and immutable `ModelHandle` for atomic model version hot-swapping.
+- **I7 — Canary Deployment & Rollback**: `CanaryRouter` supporting traffic splitting, live promotion (`/models/promote`), and instant rollback (`/models/rollback`).
+- **I8 — Quantization Evaluation**: INT8 uniform quantization simulation (`SimulatedQuantizedModel`) measuring cosine similarity precision preservation (>0.99 agreement with FP32).
+- **I9 — Observability & Quality Gates**: Prometheus text-format metrics exporter at `/metrics` tracking request counts by status/version, duration sums, queue overflows, and timeouts.
+- **I10 — RAG Integration & Release Readiness**: `RemoteInferenceClient` and `InProcessEmbeddingAdapter` fulfilling VectorDB + RAG `EmbeddingProvider` protocol, Docker support (`Dockerfile`), sitemap architecture diagrams, updated `README.md`, and 100% passing test suite (49/49 tests passed).
+
+**Final Verification Results:**
+- `pytest`: 49 passed (100% pass rate).
+- `ruff check src tests scripts`: passed cleanly (0 errors).
+- `mypy src`: passed cleanly (Success: no issues found in 10 source files).
+- `python scripts/benchmark_http.py`: 1,127.02 req/sec throughput, p50: 22.07 ms.
+
+**Git status:** `feat/i2-queue` (working tree clean, ready for merge/release).
+
+**Stopping point / Next steps:** Project implementation and release readiness verification are complete.

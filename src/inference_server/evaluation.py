@@ -1,9 +1,11 @@
-"""Local evaluation primitives for future CPU model-variant comparisons."""
+"""Local evaluation primitives for CPU model-variant comparisons."""
 
 import math
 import time
 from dataclasses import dataclass
 from typing import Protocol
+
+from inference_server.model import CpuEmbeddingModel
 
 
 class EmbeddingModel(Protocol):
@@ -21,6 +23,25 @@ class VariantResult:
     mean_cosine_similarity: float
     elapsed_seconds: float
     requests: int
+
+
+class SimulatedQuantizedModel:
+    """Simulated 8-bit quantized CPU embedding model variant for precision testing."""
+
+    dimension = 16
+
+    def __init__(self, base_model: CpuEmbeddingModel | None = None) -> None:
+        self._base_model = base_model or CpuEmbeddingModel()
+
+    def infer(self, text: str) -> list[float]:
+        """Run inference and apply uniform INT8 quantization/dequantization."""
+        raw_vector = self._base_model.infer(text)
+        # Scale float values [-1.0, 1.0] -> INT8 [-127, 127] and dequantize
+        quantized = [round(v * 127.0) for v in raw_vector]
+        dequantized = [q / 127.0 for q in quantized]
+        # Re-normalize
+        norm = math.sqrt(sum(v * v for v in dequantized))
+        return [v / norm for v in dequantized] if norm > 0 else dequantized
 
 
 def cosine_similarity(left: list[float], right: list[float]) -> float:

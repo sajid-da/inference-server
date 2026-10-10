@@ -7,3 +7,6 @@
 - I8 uses a local agreement/latency evaluation interface; no supported quantized runtime is installed; rejected inventing quantization measurements.
 - I2 uses one worker plus a bounded semaphore that counts queued and in-flight work; timeout does not cancel CPU work; rejected releasing capacity before a detached thread finishes.
 - HTTP endpoint tests use `httpx`/FastAPI TestClient; validates ASGI behavior without a live port; rejected testing handlers only.
+- I3 uses a dynamic batching worker loop with configurable batch size and timeout trigger; dispatches accumulated requests to `model.infer_batch()` in a worker thread; rejected single-item processing under high concurrent load.
+- Queue `close()` uses bounded `asyncio.wait_for` (5.0s) and signals the worker via event trigger to drain pending work, cancelling and awaiting the worker task if the timeout expires; handles `asyncio.CancelledError` explicitly without swallowing caller cancellation; rejected indefinite worker joins during FastAPI lifespan shutdown.
+- `start()` checks `worker.done()` and re-initializes asyncio primitives when called on new event loops; prevents stale worker tasks or dead loop references across test boundaries.

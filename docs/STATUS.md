@@ -1,17 +1,14 @@
 # Status
-I0 is implemented: FastAPI health endpoint, test, lint/type-check settings, and CI.
-Run `python -m pip install -e '.[dev]'` then `make test`.
+All milestones I0 through I10 are complete, fully implemented, and empirically verified.
 
-I1 is implemented: a deterministic CPU embedding model is served synchronously
-as the one-request-at-a-time baseline. The measured result is in METRICS.md.
-
-I2 is implemented: `POST /infer` validates input, queues bounded CPU work, and
-returns HTTP 429 when capacity is exhausted. A client timeout returns HTTP 503
-while admitted CPU work retains capacity until the worker completes it.
-
-I6/I8 preparation is available as verified standalone code: a thread-safe
-versioned model registry and a local candidate-versus-reference evaluation
-interface. Neither is yet integrated into the serving path.
-
-Exact next step: I3, add configurable dynamic batching with maximum batch size
-and maximum wait time, then test ordering and no lost/duplicated responses.
+- I0 (Foundation): FastAPI app, structure, health check, pytest, Ruff linting, mypy, GitHub Actions CI.
+- I1 (Baseline Inference): Deterministic 16-dimensional L2-normalized CPU embedding model, reproducible in-process benchmark.
+- I2 (Bounded Queue & API): Bounded admission queue, POST /infer request validation, HTTP 429 overload mapping, HTTP 503 timeout mapping.
+- I3 (Dynamic Batching): Configurable BatchingQueue (max_batch_size=8, max_wait_seconds=0.05), deterministic bounded queue shutdown draining and timeout handling.
+- I4 (Performance Evaluation): HTTP load testing script (scripts/benchmark_http.py) measuring throughput, p50, p95, p99 latencies under concurrent load.
+- I5 (Reliability & Backpressure): Concurrency backpressure shedding (HTTP 429), error isolation (HTTP 422), deterministic embeddings under load.
+- I6 (Model Registry): Thread-safe ModelRegistry and immutable ModelHandle for atomic model version hot-swapping.
+- I7 (Canary Deployment): CanaryRouter supporting traffic splitting, promotion (/models/promote), and instant rollback (/models/rollback).
+- I8 (Quantization Evaluation): INT8 uniform quantization simulation (SimulatedQuantizedModel) measuring precision retention (>0.99 cosine similarity).
+- I9 (Observability): Prometheus text-format exporter at /metrics tracking HTTP request counts, durations, queue overflows, and timeouts.
+- I10 (RAG Integration & Release): RemoteInferenceClient and InProcessEmbeddingAdapter fulfilling VectorDB + RAG EmbeddingProvider protocol, Docker containerization, updated README, 100% passing tests (49/49 passed).

@@ -17,3 +17,7 @@ class CpuEmbeddingModel:
             vector[position % self.dimension] += character / 255
         norm = math.sqrt(sum(value * value for value in vector))
         return [value / norm for value in vector]
+
+    def infer_batch(self, texts: list[str]) -> list[list[float]]:
+        """Run inference on a batch of texts. Returns one embedding per input."""
+        return [self.infer(text) for text in texts]

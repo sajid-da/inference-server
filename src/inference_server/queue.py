@@ -28,22 +28,25 @@ class InferenceQueue:
         if capacity < 1:
             raise ValueError("capacity must be at least 1")
         self._service = service
+        self._max_capacity = capacity
         self._requests: asyncio.Queue[PendingInference | None] = asyncio.Queue()
         self._capacity = asyncio.BoundedSemaphore(capacity)
         self._worker: asyncio.Task[None] | None = None
         self._accepting = False
 
     def start(self) -> None:
-        """Start the single worker exactly once in the current event loop."""
-        if self._worker is not None:
+        """Start the single worker in the current event loop."""
+        if self._worker is not None and not self._worker.done():
             return
+        self._requests = asyncio.Queue()
+        self._capacity = asyncio.BoundedSemaphore(self._max_capacity)
         self._accepting = True
         self._worker = asyncio.create_task(self._run(), name="inference-worker")
 
     @property
     def is_running(self) -> bool:
-        """Whether a worker exists for the current application lifetime."""
-        return self._worker is not None
+        """Whether a worker exists and is currently running."""
+        return self._worker is not None and not self._worker.done()
 
     async def infer(self, text: str, timeout_seconds: float = 1.0) -> list[float]:
         """Admit one request or reject it when capacity is exhausted."""

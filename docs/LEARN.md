@@ -23,3 +23,8 @@
 - A caller can stop waiting, but the worker keeps the admitted slot until CPU work finishes.
 - HTTP 429 tells a caller to retry later because the server is full.
 - HTTP 503 signals that an accepted request timed out waiting for its result.
+
+## I3
+- Dynamic batching trades a tiny wait window (e.g. 50ms) for dramatically higher vector compute throughput under concurrent load.
+- When running async worker tasks inside FastAPI lifespan across multiple pytest/TestClient context manager runs, module-level singleton queues must re-bind their asyncio primitives (`Event`, `Lock`, `BoundedSemaphore`) when a new event loop is started.
+- Queue `close()` must be bounded with `asyncio.wait_for` and handle `asyncio.CancelledError` explicitly. If a worker hangs, cancelling it and awaiting cancellation prevents event loop deadlock during ASGI lifespan shutdown.
