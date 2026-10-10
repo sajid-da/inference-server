@@ -17,3 +17,9 @@
 ## I8 preparation
 - Variant evaluation compares a candidate embedding with a reference embedding.
 - Cosine similarity is a simple agreement measure for equal-sized vectors.
+
+## I2
+- A bounded queue limits both waiting work and CPU work that is already running.
+- A caller can stop waiting, but the worker keeps the admitted slot until CPU work finishes.
+- HTTP 429 tells a caller to retry later because the server is full.
+- HTTP 503 signals that an accepted request timed out waiting for its result.

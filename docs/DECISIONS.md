@@ -5,3 +5,5 @@
 - I2 retains admitted work after a client wait timeout; prevents detached CPU work from bypassing bounded capacity; rejected cancelling unknown CPU work mid-execution.
 - Model handles are immutable and swapped under an `RLock`; allows version reads to observe either old or new complete state; rejected mutating a live model object.
 - I8 uses a local agreement/latency evaluation interface; no supported quantized runtime is installed; rejected inventing quantization measurements.
+- I2 uses one worker plus a bounded semaphore that counts queued and in-flight work; timeout does not cancel CPU work; rejected releasing capacity before a detached thread finishes.
+- HTTP endpoint tests use `httpx`/FastAPI TestClient; validates ASGI behavior without a live port; rejected testing handlers only.

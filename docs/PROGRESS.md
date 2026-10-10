@@ -143,3 +143,32 @@ remains uncommitted.
 
 **Exact next action:** run static checks after the formatting correction, then
 commit the verified I8 preparation separately from unverified I2 code.
+
+## 2026-10-10 IST — I2 completed in actual local environment
+
+**Overall status:** I0, I1, and I2 are complete. I6/I8 have standalone
+preparation components, but their serving integration remains future work.
+
+**Environment finding:** the sandbox blocks even standalone `asyncio.run`, but
+the same command completed outside it (`before`, then `ok`). This confirmed the
+old hang was environmental rather than repository code.
+
+**Implemented:** bounded worker queue; timeout semantics that retain capacity
+until CPU work ends; graceful worker drain; validated `POST /infer`; HTTP 429
+overload mapping and HTTP 503 timeout mapping; HTTP tests through TestClient.
+
+**Files changed:** `pyproject.toml`, `src/inference_server/api.py`,
+`src/inference_server/queue.py`, `tests/test_api.py`, `tests/test_queue.py`,
+and tracking documentation.
+
+**Commands/results:** outside sandbox, `pytest -p no:cacheprovider`: 16 passed
+(one FastAPI/Starlette TestClient deprecation warning); Ruff passed; mypy passed.
+Benchmark median: 0.0325845 s / 306894.38 in-process calls/s over 7 samples.
+
+**Known risks:** CPU work uses a thread and cannot be forcibly cancelled;
+capacity is retained until it ends. Dynamic batching, load evaluation, model
+registry serving integration, observability, and release work remain.
+
+**Git:** branch `feat/i2-queue`; I2 changes are ready to commit.
+
+**Exact next action:** commit I2, then begin I3 dynamic batching.
