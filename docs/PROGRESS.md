@@ -169,6 +169,7 @@ Benchmark median: 0.0325845 s / 306894.38 in-process calls/s over 7 samples.
 capacity is retained until it ends. Dynamic batching, load evaluation, model
 registry serving integration, observability, and release work remain.
 
-**Git:** branch `feat/i2-queue`; I2 changes are ready to commit.
+**Git:** branch `feat/i2-queue`; I2 committed as `be37e76` (`feat: add bounded
+inference queue`).
 
-**Exact next action:** commit I2, then begin I3 dynamic batching.
+**Exact next action:** begin I3 dynamic batching.
